@@ -28,10 +28,45 @@
      lifespan = LIFESPAN;
    }
    
+   Grazer ( PVector location, Biosphere biosphere ) {
+     super(location, MAXSPEED, MAXFORCE, SIGHTRANGE, AWARENESS, HIDING, biosphere);
+     lifespan = LIFESPAN;
+     //debug = true;
+   }
+   
    /* return string containing class name */
   String getType () { return "Grazer"; }
   
   void update () {
+    ArrayList<Thing> predatorsFound = new ArrayList<Thing>();
+    FloatArray predatorDistance = new FloatArray();
+    ArrayList<Thing> preyFound = new ArrayList<Thing>();
+    FloatArray preyDistance = new FloatArray();
+    
+    biosphere.search(predators, predatorsFound, predatorDistance, prey, preyFound, preyDistance, sightRange, location);
+    
+    fleeing = false;
+    if ( predatorsFound.size() > 0 ) {
+      hasTarget = false;
+      fleeing = true;
+      enemy = (Creature)predatorsFound.get(0);
+    }
+    
+    if ( !fleeing && !hasTarget && preyFound.size() > 0 ) {
+      target = null;
+      float max = sightRange;
+      int index = 0;
+      for ( int i = index; i < preyDistance.size(); i++ ) {
+        if ( preyDistance.get(i) < max ) {
+          max = preyDistance.get(i);
+          index = i;
+        }
+      }
+      target = (Creature)preyFound.get(index);
+      hasTarget = true;
+    }
+    
+    /*
     // search for predators
     Iterator<Thing> creatures = ecosystem.iterator();
     fleeing = false;
@@ -52,7 +87,7 @@
         }
         
     }
-    // end predator search
+    // end predator search*/
     
     if ( fleeing ) {
       PVector desired = PVector.sub(location, enemy.location);  // run away. need to add some random motion, weaving from side to side etc
@@ -68,8 +103,8 @@
         if ( target != null ) {
           hasTarget = true;
         }
-      }*/
-      search(prey);
+      }//
+      search(prey);*/
       if ( hasTarget ) {
         seek();
       }

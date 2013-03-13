@@ -4,7 +4,6 @@
  * 
  * expandable array of float
  */
-package expandableArray;
 
 public class FloatArray {
     private float array[];
