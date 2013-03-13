@@ -31,20 +31,57 @@
    Grazer ( PVector location, Biosphere biosphere ) {
      super(location, MAXSPEED, MAXFORCE, SIGHTRANGE, AWARENESS, HIDING, biosphere);
      lifespan = LIFESPAN;
-     //debug = true;
+     debug = true;
    }
    
    /* return string containing class name */
   String getType () { return "Grazer"; }
   
   void update () {
+    
+    ArrayList<Thing> thingsFound = new ArrayList<Thing>();
+    FloatArray thingDistance = new FloatArray();
+    
+    biosphere.search(location, sightRange, thingsFound, thingDistance);
+    
+    // begin sorting
+    ArrayList<Thing> predatorsFound = new ArrayList<Thing>();
+    FloatArray predatorDistance = new FloatArray();
+    ArrayList<Thing> preyFound = new ArrayList<Thing>();
+    FloatArray preyDistance = new FloatArray();
+    for ( int i = 0; i < thingsFound.size(); i++ ) {
+      Thing t = thingsFound.get(i);
+      String type = t.getType();
+      boolean isPredator = false;
+      for ( String s : predators ) {
+        if ( s.equals(type) ) {
+          isPredator = true;
+          predatorsFound.add(t);
+          predatorDistance.add(thingDistance.get(i));
+          break;
+        }
+      }
+      if ( !isPredator ) {
+        for ( String s : prey ) {
+          if ( s.equals(type) ) {
+            preyFound.add(t);
+            preyDistance.add(thingDistance.get(i));
+            //break;
+          }
+        }
+      }
+    }
+    // end sorting
+    
+    
+    /*
     ArrayList<Thing> predatorsFound = new ArrayList<Thing>();
     FloatArray predatorDistance = new FloatArray();
     ArrayList<Thing> preyFound = new ArrayList<Thing>();
     FloatArray preyDistance = new FloatArray();
     
     biosphere.search(predators, predatorsFound, predatorDistance, prey, preyFound, preyDistance, sightRange, location);
-    
+    */
     fleeing = false;
     if ( predatorsFound.size() > 0 ) {
       hasTarget = false;

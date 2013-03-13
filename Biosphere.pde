@@ -41,6 +41,26 @@ class Biosphere {
   }
   
   // tell the calling Creature what's around it.
+  void search ( PVector location,             // locatin to center search around
+                float maxDistance,            // maximum distance form location to look for Things
+                ArrayList<Thing> thingsFound, // List of Things found
+                FloatArray thingDistance      // List of distances of Things found from location
+              ) {
+      
+    // search the ecosystem
+    for ( Thing t : ecosystem ) {
+      // get the distance from the thing to the location
+      PVector dir = PVector.sub(t.location, location);
+      float mag = dir.mag();
+      // if the thing is within rnage, add the thing and its distance to the lists
+      if ( mag <= maxDistance ) {
+        thingsFound.add(t);
+        thingDistance.add(mag);
+      }
+    }
+  }
+  
+  // sort Things around the creature
   void search ( String[] predators,               // List of valid predators
                 ArrayList<Thing> predatorsFound,  // predators found.
                 FloatArray predatorDistance,      // predator distance
