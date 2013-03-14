@@ -28,7 +28,7 @@ void setup () {
   for ( int i = 0; i < width; i+=5 ) {
     for ( int j = 0; j <height; j +=5 ) {
       if ( random(100) < grassdensity ) {
-        Thing c = new Grass(new PVector(i, j), biosphere.ecosystem);
+        Thing c = new Grass(new PVector(i, j), biosphere);
         biosphere.addCreature(c);
       }
     }
@@ -40,7 +40,7 @@ void setup () {
   }
   // add Chasers
   for ( int i = 0; i < 1; i++ ) {
-    Thing c = new Chaser(new PVector(random(width), random(height)), biosphere.ecosystem);
+    Thing c = new Chaser(new PVector(random(width), random(height)), biosphere);
     biosphere.addCreature(c);
   }
 }

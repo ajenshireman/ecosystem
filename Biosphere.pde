@@ -52,7 +52,7 @@ class Biosphere {
       // get the distance from the thing to the location
       PVector dir = PVector.sub(t.location, location);
       float mag = dir.mag();
-      // if the thing is within rnage, add the thing and its distance to the lists
+      // if the thing is within range, add the thing and its distance to the lists
       if ( mag <= maxDistance ) {
         thingsFound.add(t);
         thingDistance.add(mag);
@@ -60,21 +60,17 @@ class Biosphere {
     }
   }
   
-  // sort Things around the creature
-  void search ( String[] predators,               // List of valid predators
-                ArrayList<Thing> predatorsFound,  // predators found.
-                FloatArray predatorDistance,      // predator distance
-                String[] prey,                    // List of valid prey
-                ArrayList<Thing> preyFound,       // prey found
-                FloatArray preyDistance,          // prey distance
+  // sort things
+  void search ( PVector location,                 // location to center search around
                 float maxDistance,                // maximum distance to look for things
-                PVector location                  // location to center search around
+                String[] predators,               // List of valid predators
+                String[] prey,                    // List of valid prey
+                ArrayList<Thing> predatorsFound,  // predators found
+                ArrayList<Thing> preyFound,       // prey found
+                FloatArray predatorDistance,      // predator distance
+                FloatArray preyDistance           // prey distance
               ) {
-    
-    // search the ecosystem
-    Iterator<Thing> things = ecosystem.iterator();
-    while ( things.hasNext() ) {
-      Thing t = things.next();
+    for ( Thing t : ecosystem ) {
       String type = t.getType();
       boolean isPredator = false;
       // check for predator
@@ -101,24 +97,10 @@ class Biosphere {
         }
       }
     }
-    
-    /* output predatrs to array
-    List<Thing> list = new ArrayList<Thing>();
-    for ( Thing t : predatorList ) {
-      list.add(t);
-    }
-    predators = list.toArray(new Thing[list.size()]);
-    predatorDistance = predatorDist.toArray();
-    // output prey to array
-    list = new ArrayList<Thing>();
-    for ( Thing t : preyList ) {
-      list.add(t);
-    }
-    prey = list.toArray(new Thing[list.size()]);
-    preyDistance = preyDist.toArray();*/
   }
   
-  Thing findNearest ( String[] valid, PVector location, float maxDistance ) {
+  // Return the closest valid Thing to the given location, within the give maximum distance
+  Thing findNearest ( PVector location, float maxDistance, String[] valid ) {
     Thing target = null;
     Iterator<Thing> creatures = ecosystem.iterator();
     float max = maxDistance;
