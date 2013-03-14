@@ -62,6 +62,7 @@ class Biosphere {
     }
   }
   
+<<<<<<< HEAD
   // sort things
   void search ( PVector location,                 // location to center search around
                 float maxDistance,                // maximum distance to look for things
@@ -123,5 +124,7 @@ class Biosphere {
     return target;
   }
   
+>>>>>>> origin/search_in_biosphere
+=======
 >>>>>>> origin/search_in_biosphere
 }
