@@ -52,7 +52,6 @@ class Creature extends Thing {
   
   /* Constructors */
   // only use for subclass
-  
   Creature ( PVector location, Biosphere biosphere ) {
     super(location, 1, 1, biosphere);
     this.biosphere = biosphere;
