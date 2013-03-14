@@ -21,7 +21,7 @@ class Thing {
         maxSpeed;        // the Thing's maximum speed ( velocity.mag() )
   boolean alive;         // is the creature alive?
   
-  Biosphere biosphere;     // the Biosphere or 'worls' the Thing exists in
+  Biosphere biosphere;     // the Biosphere or 'world' the Thing exists in
   
   /* variables for perlin noise. */
   float tx, ty, tz;

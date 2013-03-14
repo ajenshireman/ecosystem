@@ -18,11 +18,13 @@ class Chaser extends Creature {
                       HIDING = 50,
                       LIFESPAN = 300;
    
-   /* Override default values */            
+   /* Override default values */
+   String[] predators = { "" };   
    String[] prey = { "Grazer" }; // this needs to be static but Processing won't allow it
    
-   Chaser ( PVector location, ArrayList<Thing> ecosystem ) {
-     super(location, MAXSPEED, MAXFORCE, SIGHTRANGE, AWARENESS, HIDING, ecosystem);
+   /* Constructors */
+   Chaser ( PVector location, Biosphere biosphere ) {
+     super(location, MAXSPEED, MAXFORCE, SIGHTRANGE, AWARENESS, HIDING, biosphere);
      lifespan = LIFESPAN;
      size = 4;
    }
@@ -31,7 +33,13 @@ class Chaser extends Creature {
   String getType () { return "Chaser"; }
   
   void update () {
-    search(prey);
+    search();
+    sortThings(predators, prey);
+    
+    if ( preyFound.size() > 0 ) {
+      aquireTarget();
+    }
+    
     if ( hasTarget ) {
       pursue();
     }

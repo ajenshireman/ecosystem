@@ -28,19 +28,19 @@ void setup () {
   for ( int i = 0; i < width; i+=5 ) {
     for ( int j = 0; j <height; j +=5 ) {
       if ( random(100) < grassdensity ) {
-        Thing c = new Grass(new PVector(i, j), biosphere.ecosystem);
+        Thing c = new Grass(new PVector(i, j), biosphere);
         biosphere.addCreature(c);
       }
     }
   }
   // add Grazers
   for ( int i = 0; i < 100; i++ ) {
-    Thing c = new Grazer(new PVector(random(width), random(height)), biosphere.ecosystem);
+    Thing c = new Grazer(new PVector(random(width), random(height)), biosphere);
     biosphere.addCreature(c);
   }
   // add Chasers
   for ( int i = 0; i < 10; i++ ) {
-    Thing c = new Chaser(new PVector(random(width), random(height)), biosphere.ecosystem);
+    Thing c = new Chaser(new PVector(random(width), random(height)), biosphere);
     biosphere.addCreature(c);
   }
 }

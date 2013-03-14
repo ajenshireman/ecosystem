@@ -30,6 +30,15 @@ class Creature extends Thing {
   
   String[] predators,  // which types of creatures eat the Creature
            prey;       // which types of creature this Creature eats
+           
+  // Arrays for searching the Biosphere
+  ArrayList<Thing> thingsFound;
+  FloatArray thingDistance;
+  // Arrays for sorting found Things
+  ArrayList<Thing> predatorsFound;
+  FloatArray predatorDistance;
+  ArrayList<Thing> preyFound;
+  FloatArray preyDistance;
   
   boolean hasTarget;  // whether the creature is trying to get somewhere   
   Creature target;    // the creature this creature is heading towards
@@ -43,23 +52,51 @@ class Creature extends Thing {
   
   /* Constructors */
   // only use for subclass
+<<<<<<< HEAD
   Creature ( PVector location, ArrayList<Thing> ecosystem ) {
     super(location, 1, 1);
     this.ecosystem = ecosystem;
     alive = true;
+=======
+  
+  Creature ( PVector location, Biosphere biosphere ) {
+    super(location, 1, 1, biosphere);
+    this.biosphere = biosphere;
+    alive = true;
+    setArrays();
   }
   
-  Creature ( PVector location, float maxSpeed, float maxForce, float sightRange, float awareness, float hiding, ArrayList<Thing> ecosystem ) {
-    super(location, 1, 1);
+  Creature ( PVector location, 
+             float maxSpeed, 
+             float maxForce, 
+             float sightRange, 
+             float awareness, 
+             float hiding, 
+             Biosphere biosphere 
+           ) {
+    this(location, biosphere);
     this.maxSpeed = maxSpeed;
     this.maxForce = maxForce;
     this.sightRange = sightRange;
     this.awareness = awareness;
     this.hiding = hiding;
-    this.ecosystem = ecosystem;
     wanderTheta = 0;
     alive = true;
   }
+  
+  // initialize arrays that will be used for seaching the creature's suroundings
+  final void setArrays () {
+    thingsFound = new ArrayList<Thing>();
+    thingDistance = new FloatArray();
+    predatorsFound = new ArrayList<Thing>();
+    predatorDistance = new FloatArray();
+    preyFound = new ArrayList<Thing>();
+    preyDistance = new FloatArray();
+>>>>>>> origin/search_in_biosphere
+  }
+  
+  // return string containing class name
+  String getType () { return "Creature"; }
   
   void update () {
     // get nearby objects
@@ -81,9 +118,6 @@ class Creature extends Thing {
     // lived another cycle
     
   }
-  
-  // return string containing class name
-  String getType () { return "Creature"; }
   
   // move towards a static target. slow down on approach
   void seek () {
@@ -223,6 +257,68 @@ class Creature extends Thing {
         }
       }
     }  
+  }
+  
+  /* Methods for examining the surronding environment */
+  // Aquire list of Things in the area
+  void search () {
+    clearSearchLists();
+    biosphere.search(location, sightRange, thingsFound, thingDistance);
+  }
+  
+  // Sort found things 
+  void sortThings (String[] predators, String[] prey) {
+    clearSortLists();
+    
+    for ( int i = 0; i < thingsFound.size(); i++ ) {
+      Thing t = thingsFound.get(i);
+      String type = t.getType();
+      boolean isPredator = false;
+      for ( String s : predators ) {
+        if ( s.equals(type) ) {
+          isPredator = true;
+          predatorsFound.add(t);
+          predatorDistance.add(thingDistance.get(i));
+          break;
+        }
+      }
+      if ( !isPredator ) {
+        for ( String s : prey ) {
+          if ( s.equals(type) ) {
+            preyFound.add(t);
+            preyDistance.add(thingDistance.get(i));
+            break;
+          }
+        }
+      }
+    }
+  }
+  
+  // clear lists of found things
+  void clearSearchLists () {
+    thingsFound.clear();
+    thingDistance.clear();
+  }
+  
+  // clear sorted lists
+  void clearSortLists () {
+    predatorsFound.clear();
+    predatorDistance.clear();
+    preyFound.clear();
+    preyDistance.clear();
+  }
+  
+  void aquireTarget () {
+    float max = sightRange;
+    int index = 0;
+    for ( int i = index; i < preyDistance.size(); i++ ) {
+      if ( preyDistance.get(i) < max ) {
+        max = preyDistance.get(i);
+        index = i;
+      }
+    }
+    target = (Creature)preyFound.get(index);
+    hasTarget = true;
   }
   
   /* debug methods */

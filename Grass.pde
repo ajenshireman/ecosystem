@@ -19,8 +19,8 @@ class Grass extends Creature {
    */
   
   /* Constructors */
-  Grass ( PVector location, ArrayList<Thing> ecosystem ) {
-    super(location, ecosystem);
+  Grass ( PVector location, Biosphere biosphere ) {
+    super(location, biosphere);
     lifespan = LIFESPAN;
   }
   

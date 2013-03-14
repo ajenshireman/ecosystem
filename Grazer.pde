@@ -23,8 +23,8 @@
    String[] predators = { "Chaser" };
    
    /* Constructors */
-   Grazer ( PVector location, ArrayList<Thing> ecosystem ) {
-     super(location, MAXSPEED, MAXFORCE, SIGHTRANGE, AWARENESS, HIDING, ecosystem);
+   Grazer ( PVector location, Biosphere biosphere ) {
+     super(location, MAXSPEED, MAXFORCE, SIGHTRANGE, AWARENESS, HIDING, biosphere);
      lifespan = LIFESPAN;
    }
    
@@ -32,28 +32,21 @@
   String getType () { return "Grazer"; }
   
   void update () {
-    // search for predators
-    Iterator<Thing> creatures = ecosystem.iterator();
+    // Aquire list of Things in range
+    search();
+    // Sort found things into predators and prey
+    sortThings(predators, prey);
+    // For now, run directly away from the first predator seen.
+    // TODO -- use all predators seen to calulate best path to take to avoid all of them
     fleeing = false;
-    while ( creatures.hasNext() ) {
-        Thing c = creatures.next();
-        String ctype = c.getType();
-        for ( int i = 0; i < predators.length; i++ ) {
-          if ( ctype.equals(predators[i]) ) {
-            enemy = c;
-          }
-          if ( enemy != null ) {
-            PVector desired = PVector.sub(location, enemy.location);
-            if ( desired.mag() <= sightRange ) {
-              fleeing = true;
-              hasTarget = false;
-            }
-          }
-        }
-        
+    if ( predatorsFound.size() > 0 ) {
+      hasTarget = false;
+      fleeing = true;
+      enemy = (Creature)predatorsFound.get(0);
     }
-    // end predator search
     
+    // Runaway
+    // TODO -- merge with previous method and andd some erratic movement to try to shake pursuers
     if ( fleeing ) {
       PVector desired = PVector.sub(location, enemy.location);  // run away. need to add some random motion, weaving from side to side etc
       //if ( random(1) < 0.5 ) {
@@ -62,14 +55,11 @@
       //}
       steer(desired);
     }
+    // Not runnig from predators, so try to find food
     else {
-      /*if ( !hasTarget ) {
-        target = (Creature)biosphere.findNearest(prey, location, sightRange);
-        if ( target != null ) {
-          hasTarget = true;
-        }
-      }*/
-      search(prey);
+      if ( !hasTarget && preyFound.size() > 0 ) {
+        aquireTarget();
+      }  
       if ( hasTarget ) {
         seek();
       }
