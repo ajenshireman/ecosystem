@@ -38,6 +38,11 @@ class Thing {
     init();
   }
   
+  Thing ( PVector location, float mass, float size , Biosphere biosphere ) {
+    this(location, mass, size);
+    this.biosphere = biosphere;
+  }
+  
   /* Initializes values for use with Perlin noise */
   final void init () {
     tx = random(100000);

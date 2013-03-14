@@ -52,16 +52,6 @@ class Creature extends Thing {
   
   /* Constructors */
   // only use for subclass
-<<<<<<< HEAD
-<<<<<<< HEAD
-  Creature ( PVector location, ArrayList<Thing> ecosystem ) {
-    super(location, 1, 1);
-    this.ecosystem = ecosystem;
-    alive = true;
-=======
-  
-=======
->>>>>>> origin/search_in_biosphere
   Creature ( PVector location, Biosphere biosphere ) {
     super(location, 1, 1, biosphere);
     this.biosphere = biosphere;
@@ -95,7 +85,6 @@ class Creature extends Thing {
     predatorDistance = new FloatArray();
     preyFound = new ArrayList<Thing>();
     preyDistance = new FloatArray();
->>>>>>> origin/search_in_biosphere
   }
   
   // return string containing class name
