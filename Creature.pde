@@ -43,32 +43,6 @@ class Creature extends Thing {
   
   /* Constructors */
   // only use for subclass
-  
-  Creature ( PVector location, Biosphere biosphere ) {
-    super(location, 1, 1, biosphere);
-    this.biosphere = biosphere;
-    alive = true;
-  }
-  
-  Creature ( PVector location, 
-             float maxSpeed, 
-             float maxForce, 
-             float sightRange, 
-             float awareness, 
-             float hiding, 
-             Biosphere biosphere 
-           ) {
-    super(location, 1, 1, biosphere);
-    this.maxSpeed = maxSpeed;
-    this.maxForce = maxForce;
-    this.sightRange = sightRange;
-    this.awareness = awareness;
-    this.hiding = hiding;
-    wanderTheta = 0;
-    alive = true;
-  }
-  
-  
   Creature ( PVector location, ArrayList<Thing> ecosystem ) {
     super(location, 1, 1);
     this.ecosystem = ecosystem;
