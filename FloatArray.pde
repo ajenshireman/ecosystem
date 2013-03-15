@@ -6,20 +6,20 @@
  */
 
 public class FloatArray {
-    private float array[];
+    private float[] array;
     
     /* Constructors */
-    // Create a new FloatArray with an initial size of 0
+    // Contsructs a new FloatArray with an initial size of 0
     public FloatArray () {
         array = new float[0];
     }
     
-    // Create a new FloatArray with the specified initial size
-    public FloatArray ( int size ) {
-        array = new float[size];
+    // Contsructs a new FloatArray with the specified initial size
+    public FloatArray ( int initialSize ) {
+        array = new float[initialSize];
     }
     
-    // Create a new FloatArray from an existing array
+    // Contsructs a new FloatArray from an existing array
     public FloatArray ( float[] array ) {
         this(array.length);
         
@@ -29,25 +29,25 @@ public class FloatArray {
     }
     
     /* Methods for getting information about the FloatArray */
-    // return the number of elements in the floatArray
+    // Returns the number of elements in the FloatArray
     public int size () {
         return array.length;
     }
     
-    // return the element at the specified index
+    // Returns the element at the specified index
     public float get ( int index ) {
         return array[index];
     }
     
-    // return a copy of the floatArray
+    // Returns a copy of the FloatArray
     public FloatArray copy () {
         FloatArray newArray = new FloatArray(array);
         return newArray;
     }
     
-    // return a copy of the FloatArray's array
+    // Returns a copy of the FloatArray's array
     public float[] toArray () {
-        float newArray[] = new float[array.length];
+        float[] newArray = new float[array.length];
 
         for ( int i = 0; i < array.length; i++ ) {
             newArray[i] = array[i];
@@ -56,31 +56,48 @@ public class FloatArray {
         return newArray;
     }
     
+    // Checks if two FloatArrays are equal
+    // Returns true if both FLoatArrays are the same size and if all elements 
+    //   are the same and in the same place, else returns false
+    public boolean equals ( FloatArray fArray ) {
+        if ( array.length != fArray.size() ) {
+            return false;
+        }
+        else {
+            for ( int i = 0; i < this.size(); i++ ) {
+                if ( array[i] != fArray.get(i) ) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+    
     /* Methods for manipulating the FloatArray */
-    // replace the value at the specified index with the specified value
+    // Replaces the value at the specified index with the specified value
     public void set ( int index, float value ) {
         array[index] = value;
     }
     
-    // append a new element to the end of the FloatArray
+    // Appends a new element to the end of the FloatArray
     public void add ( float newElement ) {
         add(newElement, array.length);
     }
     
-    // insert a new element into the FloatArray at the specified position
+    // Inserts a new element into the FloatArray at the specified position
     public void add ( float newElement, int index ) {
         float[] e = { newElement };
         add(e, index);
     }
     
-    // append a new array of elements to the end of the floatArray
+    // Appends a new array of elements to the end of the FloatArray
     public void add ( float[] newElements) {
         add(newElements, array.length);
     }
     
-    // insert a new array of elements into the floatArray at the specified position
+    // Inserts a new array of elements into the FloatArray at the specified position
     public void add ( float[] newElements, int index ) {
-        float newArray[] = new float[array.length + newElements.length];
+        float[] newArray = new float[array.length + newElements.length];
 
         for ( int i = 0; i < index; i++ ) {
             newArray[i] = array[i];
@@ -97,15 +114,15 @@ public class FloatArray {
         array = newArray;
     }
     
-    // remove the element at the specified index
+    // Removes the element at the specified index
     public void remove ( int index ) {
         remove(index, index);
     }
     
-    // remove all elements between two specified indices, inclusive
+    // Removes all elements between two specified indices, inclusive
     public void remove ( int index1, int index2 ) {
         int elementsToRemove = index2 - index1 + 1;
-        float newArray[] = new float[array.length - elementsToRemove];
+        float[] newArray = new float[array.length - elementsToRemove];
         
         for ( int i = 0; i < index1; i++ ) {
                 newArray[i] = array[i];
@@ -118,9 +135,23 @@ public class FloatArray {
         array = newArray;
     }
     
-    // remove all elements from the FloatArray
+    // Removes all elements from the FloatArray
     public void clear () {
         remove(0, array.length - 1);
+    }
+    
+    // Increases the FloatArray's size to the specified size if needed
+    public void ensureCapacity ( int minSize ) {
+        if ( array.length >= minSize ) return;
+        else {
+            float[] newArray = new float[minSize];
+
+            for ( int i = 0; i < array.length; i++ ) {
+                newArray[i] = array[i];
+            }
+            
+            array = newArray;
+        }
     }
 }
 
