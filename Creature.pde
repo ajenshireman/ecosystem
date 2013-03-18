@@ -300,6 +300,23 @@ class Creature extends Thing {
     preyDistance.clear();
   }
   
+  // look at all predators and calculate the best escape vector
+  void flee () {
+    hasTarget = false;
+    fleeing = true;
+    PVector escape = new PVector();
+    for ( Thing c : predatorsFound ) {
+      PVector eDist = PVector.sub(location, c.location);
+      /* debug 
+      stroke(0);
+      line(location.x, location.y, c.location.x, c.location.y);*/
+      escape.add(eDist);
+    }
+    escape.x /= predatorsFound.size();
+    escape.y /= predatorsFound.size();
+    steer(escape);
+  }
+  
   void aquireTarget () {
     float max = sightRange;
     int index = 0;

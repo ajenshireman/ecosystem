@@ -40,21 +40,22 @@
     // TODO -- use all predators seen to calulate best path to take to avoid all of them
     fleeing = false;
     if ( predatorsFound.size() > 0 ) {
-      hasTarget = false;
+      /*hasTarget = false;
       fleeing = true;
-      enemy = (Creature)predatorsFound.get(0);
+      enemy = (Creature)predatorsFound.get(0);*/
+      flee();
     }
     
     // Runaway
     // TODO -- merge with previous method and andd some erratic movement to try to shake pursuers
-    if ( fleeing ) {
+    /*if ( fleeing ) {
       PVector desired = PVector.sub(location, enemy.location);  // run away. need to add some random motion, weaving from side to side etc
       //if ( random(1) < 0.5 ) {
         desired.x += random(-maxSpeed, maxSpeed);
         desired.y += random(-maxSpeed, maxSpeed);
       //}
       steer(desired);
-    }
+    }*/
     // Not runnig from predators, so try to find food
     else {
       if ( !hasTarget && preyFound.size() > 0 ) {
