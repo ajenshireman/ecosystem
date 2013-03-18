@@ -10,7 +10,7 @@
  */
 
 class Chaser extends Creature {
-   /* Default values */
+   /* Default creature type parameters */
    final static float MAXSPEED = 1,
                       MAXFORCE = 0.01,
                       SIGHTRANGE = 50,
@@ -19,17 +19,16 @@ class Chaser extends Creature {
                       WANDER = 0.3, 
                       LIFESPAN = 300;
    
-   /* Override default values */
-   String[] mypredators = { "" };   
-   String[] myprey = { "Grazer" }; // this needs to be static but Processing won't allow it
+   /* Lists of predators and prey for this Creature type */
+   String[] predators = { "" };   // this needs to be static but java won't allow it in an inner class.
+   String[] prey = { "Grazer" };  // this needs to be static but java won't allow it in an inner class.
    
    /* Constructors */
    Chaser ( PVector location, Biosphere biosphere ) {
      super(location, MAXSPEED, MAXFORCE, SIGHTRANGE, AWARENESS, HIDING, WANDER, biosphere);
+     setPlaceInFoodChain(predators, prey);
      lifespan = LIFESPAN;
      size = 4;
-     predators = mypredators;
-     prey = myprey;
    }
    
    /* return string containing class name */

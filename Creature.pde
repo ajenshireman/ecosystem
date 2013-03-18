@@ -18,7 +18,8 @@ class Creature extends Thing {
   float maxForce,   // maximum acceleration, i.e. turning speed
         sightRange, // maximum range the Creature can detect thigs at
         awareness,  // chance the Creature will notice things in range
-        hiding;     // chance the Creature will not be noticed by other things
+        hiding,     // chance the Creature will not be noticed by other things
+        wanderRate; // how much the Creature cahnges its directino while wandering
   
   float lifespan,   // average lifespan for Creature type
         lifetime,   // how long this creature has lived      
@@ -65,7 +66,7 @@ class Creature extends Thing {
              float sightRange, 
              float awareness, 
              float hiding, 
-             float wanderTheta, 
+             float wanderRate, 
              Biosphere biosphere 
            ) {
     this(location, biosphere);
@@ -74,9 +75,15 @@ class Creature extends Thing {
     this.sightRange = sightRange;
     this.awareness = awareness;
     this.hiding = hiding;
-    this.change = wanderTheta;
+    this.wanderRate = wanderRate;
     this.wanderTheta = 0;
     alive = true;
+  }
+  
+  /* set predator and prey lists to the correct ones for the creature's type */
+  final void setPlaceInFoodChain ( String[] predators, String[] prey ) {
+    this.predators = predators;
+    this.prey = prey;
   }
   
   // initialize arrays that will be used for seaching the creature's suroundings
@@ -117,7 +124,7 @@ class Creature extends Thing {
       }
       // No food found, wander around a bit
       else {
-        wander(change);
+        wander(wanderRate);
       }
     }
   }

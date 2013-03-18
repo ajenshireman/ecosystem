@@ -19,16 +19,15 @@
                       WANDER = 0.3,
                       LIFESPAN = 300;
    
-   /* Override default values */            
-   String[] myprey = { "Grass" }; // this needs to be static but Processing won't allow it
-   String[] mypredators = { "Chaser" };
+   /* Lists of predators and prey for this Creature type */            
+   String[] prey = { "Grass" };        // this needs to be static but java won't allow it in an inner class.
+   String[] predators = { "Chaser" };  // this needs to be static but java won't allow it in an inner class.
    
    /* Constructors */
    Grazer ( PVector location, Biosphere biosphere ) {
      super(location, MAXSPEED, MAXFORCE, SIGHTRANGE, AWARENESS, HIDING, WANDER, biosphere);
+     setPlaceInFoodChain(predators, prey);
      lifespan = LIFESPAN;
-     predators = mypredators;
-     prey = myprey;
    }
    
    /* return string containing class name */
