@@ -16,60 +16,54 @@
                       SIGHTRANGE = 50,
                       AWARENESS = 50,
                       HIDING = 50,
+                      WANDER = 0.3,
                       LIFESPAN = 300;
    
    /* Override default values */            
-   String[] prey = { "Grass" }; // this needs to be static but Processing won't allow it
-   String[] predators = { "Chaser" };
+   String[] myprey = { "Grass" }; // this needs to be static but Processing won't allow it
+   String[] mypredators = { "Chaser" };
    
    /* Constructors */
    Grazer ( PVector location, Biosphere biosphere ) {
-     super(location, MAXSPEED, MAXFORCE, SIGHTRANGE, AWARENESS, HIDING, biosphere);
+     super(location, MAXSPEED, MAXFORCE, SIGHTRANGE, AWARENESS, HIDING, WANDER, biosphere);
      lifespan = LIFESPAN;
+     predators = mypredators;
+     prey = myprey;
    }
    
    /* return string containing class name */
   String getType () { return "Grazer"; }
-  
+  /*
   void update () {
     // Aquire list of Things in range
     search();
     // Sort found things into predators and prey
     sortThings(predators, prey);
-    // For now, run directly away from the first predator seen.
-    // TODO -- use all predators seen to calulate best path to take to avoid all of them
+     
     fleeing = false;
+    // If predators are found, run away from them
     if ( predatorsFound.size() > 0 ) {
-      /*hasTarget = false;
-      fleeing = true;
-      enemy = (Creature)predatorsFound.get(0);*/
       flee();
     }
-    
-    // Runaway
-    // TODO -- merge with previous method and andd some erratic movement to try to shake pursuers
-    /*if ( fleeing ) {
-      PVector desired = PVector.sub(location, enemy.location);  // run away. need to add some random motion, weaving from side to side etc
-      //if ( random(1) < 0.5 ) {
-        desired.x += random(-maxSpeed, maxSpeed);
-        desired.y += random(-maxSpeed, maxSpeed);
-      //}
-      steer(desired);
-    }*/
     // Not runnig from predators, so try to find food
     else {
-      if ( !hasTarget && preyFound.size() > 0 ) {
+      if ( preyFound.size() > 0 ) {
         aquireTarget();
-      }  
-      if ( hasTarget ) {
-        seek();
       }
+      else {
+        hasTarget = false;
+      }
+      
+      if ( hasTarget ) {
+        chase();
+      }
+      // No food found, wander around a bit
       else {
         wander(0.3);
       }
     }
   }
-  
+  */
   void display () {
     stroke(0);
     fill(175);
@@ -90,6 +84,16 @@
    
   void checkEdge () {
     bounce4();
-  } 
-   
+  }
+  
+  void aquireTarget () {
+    if ( !hasTarget ) {
+      aquireNearestTarget();
+    }
+  }
+  
+  void chase () {
+    seek();
+  }
+  
  }

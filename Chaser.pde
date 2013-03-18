@@ -15,23 +15,57 @@ class Chaser extends Creature {
                       MAXFORCE = 0.01,
                       SIGHTRANGE = 50,
                       AWARENESS = 50,
-                      HIDING = 50,
+                      HIDING = 50, 
+                      WANDER = 0.3, 
                       LIFESPAN = 300;
    
    /* Override default values */
-   String[] predators = { "" };   
-   String[] prey = { "Grazer" }; // this needs to be static but Processing won't allow it
+   String[] mypredators = { "" };   
+   String[] myprey = { "Grazer" }; // this needs to be static but Processing won't allow it
    
    /* Constructors */
    Chaser ( PVector location, Biosphere biosphere ) {
-     super(location, MAXSPEED, MAXFORCE, SIGHTRANGE, AWARENESS, HIDING, biosphere);
+     super(location, MAXSPEED, MAXFORCE, SIGHTRANGE, AWARENESS, HIDING, WANDER, biosphere);
      lifespan = LIFESPAN;
      size = 4;
+     predators = mypredators;
+     prey = myprey;
    }
    
    /* return string containing class name */
   String getType () { return "Chaser"; }
-  
+  /*
+  void update () {
+    // Aquire list of Things in range
+    search();
+    // Sort found things into predators and prey
+    sortThings(predators, prey);
+     
+    fleeing = false;
+    // If predators are found, run away from them
+    if ( predatorsFound.size() > 0 ) {
+      flee();
+    }
+    // Not runnig from predators, so try to find food
+    else {
+      if ( preyFound.size() > 0 ) {
+        aquireTarget();
+      }
+      else {
+        hasTarget = false;
+      }
+      
+      if ( hasTarget ) {
+        chase();
+      }
+      // No food found, wander around a bit
+      else {
+        wander(0.3);
+      }
+    }
+  }
+  */
+  /*
   void update () {
     search();
     sortThings(predators, prey);
@@ -39,16 +73,19 @@ class Chaser extends Creature {
     if ( preyFound.size() > 0 ) {
       aquireTarget();
     }
+    else {
+     hasTarget = false;
+    }
     
     if ( hasTarget ) {
-      pursue();
+      chase();
     }
     else {
       wander(0.3);
     }
     
   }
-  
+  */
   void display () {
     float theta = velocity.heading2D() + PI/2;
     fill(127);
@@ -79,9 +116,17 @@ class Chaser extends Creature {
   }
    
   void checkEdge () {
-    soft();
+    //soft();
     wrap();
     //bounce4();
+  }
+  
+  void aquireTarget () {
+    aquireNearestTarget();
+  }
+  
+  void chase () {
+    pursue();
   }
   
 }

@@ -46,7 +46,7 @@ class Creature extends Thing {
   boolean fleeing;    // whether the creature is running form another
   Thing enemy;        // creature this creature is running from
   
-  float wanderTheta;
+  float wanderTheta, change;
   
   boolean debug = false;
   
@@ -65,6 +65,7 @@ class Creature extends Thing {
              float sightRange, 
              float awareness, 
              float hiding, 
+             float wanderTheta, 
              Biosphere biosphere 
            ) {
     this(location, biosphere);
@@ -73,7 +74,8 @@ class Creature extends Thing {
     this.sightRange = sightRange;
     this.awareness = awareness;
     this.hiding = hiding;
-    wanderTheta = 0;
+    this.change = wanderTheta;
+    this.wanderTheta = 0;
     alive = true;
   }
   
@@ -90,6 +92,36 @@ class Creature extends Thing {
   // return string containing class name
   String getType () { return "Creature"; }
   
+  void update () {
+    // Aquire list of Things in range
+    search();
+    // Sort found things into predators and prey
+    sortThings(predators, prey);
+     
+    fleeing = false;
+    // If predators are found, run away from them
+    if ( predatorsFound.size() > 0 ) {
+      flee();
+    }
+    // Not runnig from predators, so try to find food
+    else {
+      if ( preyFound.size() > 0 ) {
+        aquireTarget();
+      }
+      else {
+        hasTarget = false;
+      }
+      
+      if ( hasTarget ) {
+        chase();
+      }
+      // No food found, wander around a bit
+      else {
+        wander(change);
+      }
+    }
+  }
+  /*
   void update () {
     // get nearby objects
     
@@ -108,6 +140,12 @@ class Creature extends Thing {
     // if starved to death, die
     
     // lived another cycle
+    
+  }
+  */
+  // How to go towards the target.
+  // Override for individual behavior.
+  void chase () {
     
   }
   
@@ -140,6 +178,28 @@ class Creature extends Thing {
         return;
       }
     else steer(desired);
+    
+    /* debug
+    stroke(0);
+    line(tloc.x + 10, tloc.y, tloc.x - 10, tloc.y);
+    line(tloc.x, tloc.y + 10, tloc.x, tloc.y - 10);*/
+  }
+  
+  // look at all predators and calculate the best escape vector
+  void flee () {
+    hasTarget = false;
+    fleeing = true;
+    PVector escape = new PVector();
+    for ( Thing c : predatorsFound ) {
+      PVector eDist = PVector.sub(location, c.location);
+      /* debug
+      stroke(0);
+      line(location.x, location.y, c.location.x, c.location.y);*/
+      escape.add(eDist);
+    }
+    escape.x /= predatorsFound.size();
+    escape.y /= predatorsFound.size();
+    steer(escape);
   }
   
   // apply a force to turn in the desired direction, limit the maximum steering force to mag.
@@ -182,9 +242,9 @@ class Creature extends Thing {
     ellipse(desired.x, desired.y, 4, 4);
     line(location.x, location.y, cLoc.x, cLoc.y);
     line(cLoc.x, cLoc.y, desired.x, desired.y);
-    textSize(16);
-    fill(0);
-    text("X: " + location.x + " Y: " + location.y, 100, 50);*/
+    //textSize(16);
+    //fill(0);
+    //text("X: " + location.x + " Y: " + location.y, 100, 50);*/
   }
   
   // veer away from the edge rather than bouncing off it.
@@ -300,24 +360,14 @@ class Creature extends Thing {
     preyDistance.clear();
   }
   
-  // look at all predators and calculate the best escape vector
-  void flee () {
-    hasTarget = false;
-    fleeing = true;
-    PVector escape = new PVector();
-    for ( Thing c : predatorsFound ) {
-      PVector eDist = PVector.sub(location, c.location);
-      /* debug 
-      stroke(0);
-      line(location.x, location.y, c.location.x, c.location.y);*/
-      escape.add(eDist);
-    }
-    escape.x /= predatorsFound.size();
-    escape.y /= predatorsFound.size();
-    steer(escape);
+  // behavior for selecting a target.
+  // Override for individual behavior
+  void aquireTarget () {
+    
   }
   
-  void aquireTarget () {
+  // Aquire closest prey creature
+  void aquireNearestTarget () {
     float max = sightRange;
     int index = 0;
     for ( int i = index; i < preyDistance.size(); i++ ) {
