@@ -119,6 +119,7 @@ class Creature extends Thing {
         hasTarget = false;
       }
       
+      // if prey is found, go after it
       if ( hasTarget ) {
         chase();
       }
@@ -128,6 +129,7 @@ class Creature extends Thing {
       }
     }
   }
+  
   /*
   void update () {
     // get nearby objects
@@ -150,6 +152,7 @@ class Creature extends Thing {
     
   }
   */
+  
   // How to go towards the target.
   // Override for individual behavior.
   void chase () {

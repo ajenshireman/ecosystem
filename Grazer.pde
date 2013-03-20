@@ -30,39 +30,9 @@
      lifespan = LIFESPAN;
    }
    
-   /* return string containing class name */
+  /* return string containing class name */
   String getType () { return "Grazer"; }
-  /*
-  void update () {
-    // Aquire list of Things in range
-    search();
-    // Sort found things into predators and prey
-    sortThings(predators, prey);
-     
-    fleeing = false;
-    // If predators are found, run away from them
-    if ( predatorsFound.size() > 0 ) {
-      flee();
-    }
-    // Not runnig from predators, so try to find food
-    else {
-      if ( preyFound.size() > 0 ) {
-        aquireTarget();
-      }
-      else {
-        hasTarget = false;
-      }
-      
-      if ( hasTarget ) {
-        chase();
-      }
-      // No food found, wander around a bit
-      else {
-        wander(0.3);
-      }
-    }
-  }
-  */
+  
   void display () {
     stroke(0);
     fill(175);
