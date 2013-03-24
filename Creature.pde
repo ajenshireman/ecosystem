@@ -131,6 +131,7 @@ class Creature extends Thing {
   }
   
   /*
+  // Template for what each creature should do. Left in for reference
   void update () {
     // get nearby objects
     

@@ -33,10 +33,6 @@ class Grass extends Creature {
     display();
   }
   
-  void update () {
-    // do check for lifetime eventually
-  }
-  
   void display () {
     noStroke();
     fill(50, 175, 50, 175);
