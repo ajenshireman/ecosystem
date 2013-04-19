@@ -41,7 +41,7 @@ class Biosphere {
     
     while ( creatures.hasNext() ) {
       Thing creature = creatures.next();  // get next Thing in the ecosystem
-      if ( creature.isDead() ) {          // if the Thing is dead, remove it from the ecosystem
+      if ( creature.remove() ) {          // if the Thing is dead, remove it from the ecosystem
         creatures.remove();
       }
       else creature.run();                // do that thing you do

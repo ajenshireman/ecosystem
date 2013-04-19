@@ -19,7 +19,8 @@ class Thing {
   float mass,            // mass of the Thing
         size,            // size of the Thing
         maxSpeed;        // the Thing's maximum speed ( velocity.mag() )
-  boolean alive;         // is the creature alive?
+  boolean alive,         // is the creature alive?
+          remove;        // shoould the thing be removed from the ecoysytem?
   
   Biosphere biosphere;     // the Biosphere or 'world' the Thing exists in
   
@@ -35,6 +36,7 @@ class Thing {
     this.mass = mass;
     this.size = size;
     alive = true;
+    remove = false;
     init();
   }
   
@@ -59,6 +61,9 @@ class Thing {
   /* return true is the Thing is dead */
   boolean isDead () { return !alive; }
   
+  /* return true if the Thing should be removed */
+  boolean remove () { return remove; }
+  
   /* Main methods, subclasses should override for custom behavior */
   // primary mehtod
   void run () {
@@ -71,7 +76,8 @@ class Thing {
   
   // do the stuff the Thing should do
   void update () {
-    
+    // By default, Things should be removed when dead
+    if ( !alive ) remove = true;
   }
   
   // draw the Thing. default is a circle

@@ -46,6 +46,7 @@ class Creature extends Thing {
   
   boolean fleeing;    // whether the creature is running form another
   Thing enemy;        // creature this creature is running from
+  float decay;        // Timer to remove the Creature from the ecosystem after it dies
   
   float wanderTheta, change;
   
@@ -83,6 +84,8 @@ class Creature extends Thing {
     this.hunger =0;
     this.meals = 0;
     this.alive = true;
+    this.remove = false;
+    this.decay = 0;
   }
   
   /* set predator and prey lists to the correct ones for the creature's type */
@@ -105,6 +108,15 @@ class Creature extends Thing {
   String getType () { return "Creature"; }
   
   void update () {
+    // If target is dead, do calculations to see if it should be removed
+    // Always skip the rest of update() since the creature is dead and therefore can't do anything
+    if ( !alive ) {
+      if ( decay < -1 ) remove = true;
+      velocity.mult(0);
+      decay--;
+      return;
+    }
+    
     // Aquire list of Things in range
     search();
     // Sort found things into predators and prey
@@ -180,15 +192,29 @@ class Creature extends Thing {
     hasTarget = false;
     fleeing = false;
     alive = false;
+    decay = 1000;
   }
-   
+  
+  // Creature is eaten
+  void eaten () {
+    die();
+    remove = true;
+  }
+  
   // Creature eats another
   void eat (Creature target) {
-    target.die();
-    hunger /= 2; // Add method for getting how "filling" the meal was
-    if ( hunger < 0 ) hunger = 0;
-    meals++;
-    hasTarget = false;
+    if ( target.remove() ) {
+      hasTarget = false;
+      target = null;
+      return;
+    }
+    else {
+      target.eaten();
+      hunger /= 2; // Add method for getting how "filling" the meal was
+      if ( hunger < 0 ) hunger = 0;
+      meals++;
+      hasTarget = false;
+    }
   }
   
   // Reproduction
@@ -278,6 +304,14 @@ class Creature extends Thing {
     PVector steer = PVector.sub(desired, velocity);
     steer.limit(maxForce);
     applyForce(steer);
+  }
+  
+  @Override
+  void accelerate () {
+    super.accelerate();
+    if ( !fleeing && !hasTarget ) {
+      velocity.limit(maxSpeed/2);
+    }
   }
   
   // "wandering" motion. taken from The Nature of Code
