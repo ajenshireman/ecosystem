@@ -19,7 +19,7 @@ class Creature extends Thing {
         sightRange, // maximum range the Creature can detect thigs at
         awareness,  // chance the Creature will notice things in range
         hiding,     // chance the Creature will not be noticed by other things
-        wanderRate; // how much the Creature cahnges its directino while wandering
+        wanderRate; // how much the Creature changes its directino while wandering
   
   float lifespan,   // average lifespan for Creature type
         lifetime,   // how long this creature has lived      
@@ -60,7 +60,8 @@ class Creature extends Thing {
     setArrays();
   }
   
-  Creature ( PVector location, 
+  Creature ( PVector location,
+             float size, 
              float maxSpeed, 
              float maxForce, 
              float sightRange, 
@@ -70,6 +71,7 @@ class Creature extends Thing {
              Biosphere biosphere 
            ) {
     this(location, biosphere);
+    this.size = size;
     this.maxSpeed = maxSpeed;
     this.maxForce = maxForce;
     this.sightRange = sightRange;
@@ -77,7 +79,10 @@ class Creature extends Thing {
     this.hiding = hiding;
     this.wanderRate = wanderRate;
     this.wanderTheta = 0;
-    alive = true;
+    this.lifetime = 0;
+    this.hunger =0;
+    this.meals = 0;
+    this.alive = true;
   }
   
   /* set predator and prey lists to the correct ones for the creature's type */
@@ -128,6 +133,21 @@ class Creature extends Thing {
         wander(wanderRate);
       }
     }
+    
+    if ( meals >= 5 ) {
+      reproduce();
+    }
+    
+    if ( hunger > 1200 ) {
+      die();
+    }
+    
+    // old age stuff
+    
+    // lived another cycle
+    hunger++;
+    //println(hunger);
+    lifetime++;
   }
   
   /*
@@ -154,6 +174,28 @@ class Creature extends Thing {
   }
   */
   
+  // Creature dies
+  void die () {
+    target = null;
+    hasTarget = false;
+    fleeing = false;
+    alive = false;
+  }
+   
+  // Creature eats another
+  void eat (Creature target) {
+    target.die();
+    hunger /= 2; // Add method for getting how "filling" the meal was
+    if ( hunger < 0 ) hunger = 0;
+    meals++;
+    hasTarget = false;
+  }
+  
+  // Reproduction
+  void reproduce () {
+    // Must be overridden
+  }
+  
   // How to go towards the target.
   // Override for individual behavior.
   void chase () {
@@ -169,9 +211,12 @@ class Creature extends Thing {
       }
       PVector desired = PVector.sub(target.location, location);
       float mag = desired.mag();
-      if ( mag < 1 ) { 
+      if ( mag < 1 ) {
+        /*
         target.alive = false; // changing target's status directly: need to invoke a method for this. set lifespan to private for all Creatures?
         hasTarget = false;
+        */
+        eat(target);
         return;
       }
       steer(desired, mag);
@@ -183,9 +228,12 @@ class Creature extends Thing {
     PVector tloc = PVector.add(target.location, target.velocity);
     PVector desired = PVector.sub(tloc, location);
     float mag = desired.mag();
-    if ( mag < 1 ) { 
+    if ( mag < 1 ) {
+        /*
         target.alive = false; // changing target's status directly: need to invoke a method for this. set lifespan to private for all Creatures?
         hasTarget = false;
+        */
+        eat(target);
         return;
       }
     else steer(desired);
@@ -211,6 +259,7 @@ class Creature extends Thing {
     escape.x /= predatorsFound.size();
     escape.y /= predatorsFound.size();
     steer(escape);
+    evade(1);
   }
   
   // apply a force to turn in the desired direction, limit the maximum steering force to mag.
@@ -234,7 +283,7 @@ class Creature extends Thing {
   // "wandering" motion. taken from The Nature of Code
   void wander ( float change ) {
     float D = sightRange * 1.5;
-    float R = sightRange / 2;
+    float R = sightRange * 0.5;
     //change = 0.1;
     wanderTheta += random(-change, change);
     PVector cLoc = velocity.get();
@@ -246,6 +295,34 @@ class Creature extends Thing {
     PVector desired = PVector.add(cLoc, offset);
     steer(PVector.sub(desired, location));
     /* debug 
+    stroke(0);
+    noFill();
+    ellipseMode(CENTER);
+    ellipse(cLoc.x, cLoc.y, R*2, R*2);
+    ellipse(desired.x, desired.y, 4, 4);
+    line(location.x, location.y, cLoc.x, cLoc.y);
+    line(cLoc.x, cLoc.y, desired.x, desired.y);
+    //textSize(16);
+    //fill(0);
+    //text("X: " + location.x + " Y: " + location.y, 100, 50);*/
+  }
+  
+  // "wandering" motion. taken from The Nature of Code
+  void evade ( float evadeChance ) {
+    float D = sightRange * 1.5;
+    float R = sightRange * 0.5;
+    //change = 0.1;
+    float evadeTheta = random( (PI / 4), ( (7 * PI) / 4 ));
+    evadeTheta += PI;
+    PVector cLoc = velocity.get();
+    cLoc.normalize();
+    cLoc.mult(D);
+    cLoc.add(location);
+    float heading = velocity.heading2D();
+    PVector offset = new PVector(R * cos(evadeTheta + heading), R * sin(evadeTheta + heading));
+    PVector desired = PVector.add(cLoc, offset);
+    steer(PVector.sub(desired, location));
+    /* debug *
     stroke(0);
     noFill();
     ellipseMode(CENTER);
@@ -402,4 +479,33 @@ class Creature extends Thing {
     ellipseMode(CENTER);
   }
   
+  
+  /* Determine location of child */
+  PVector getSpawnLocation( PVector parentLocation, float spawnDistance ) {
+    // spawn at a random angle
+    float spawnAngle = random(TWO_PI);
+    float spawnDistanceX = cos(spawnAngle) * spawnDistance;
+    float spawnDistanceY = sin(spawnAngle) * spawnDistance;
+    // convert to global co-ords
+    float spawnX = location.x + spawnDistanceX;
+    float spawnY = location.y + spawnDistanceY;
+    // final location of child
+    PVector spawnLoc = new PVector(spawnX, spawnY);
+    
+    return spawnLoc;
+  }
+  
+  /* Randomize the child's attributes */
+  float randomAtt ( float parentAtt, float defaultAtt, float mutationRate ) {
+    if ( random(0, 1) < mutationRate ) {
+      return random(parentAtt * 0.5, parentAtt * 1.5);
+    }
+    else {
+      return parentAtt;
+    }
+  }
+  
+  float randomAtt ( float att, float range ) {
+    return random(att / range, att * range);
+  }
 }

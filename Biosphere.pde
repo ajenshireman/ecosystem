@@ -16,19 +16,27 @@ import java.util.Iterator;
 
 class Biosphere {
   ArrayList<Thing> ecosystem;  // ArrayList that will contain all objects in the ecosystem
+  ArrayList<Thing> spawns;     // ArrayList for holding objects to be added to the ecosystem
   
   /* Constructors */
   Biosphere () {
     ecosystem = new ArrayList<Thing>();
+    spawns = new ArrayList<Thing>();
   }
   
   // add creature to the ecosystem
   void addCreature ( Thing thing ) {
-    ecosystem.add(thing);
+    spawns.add(thing);
   }
   
   // process each Thing and make it do whatever it wants to do
   void run() {
+    // Add new things to the ecosystem
+    for ( Thing t : spawns ) {
+      ecosystem.add(t);
+    }
+    spawns.clear();
+    
     Iterator<Thing> creatures = ecosystem.iterator();
     
     while ( creatures.hasNext() ) {
