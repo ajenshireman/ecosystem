@@ -155,8 +155,10 @@ class Creature extends Thing {
     if ( hunger > 1200 ) {
       die();
     }
-    
-    // old age stuff
+    if ( oldAge(lifetime, lifespan) ) {
+      //println(getType() + " lived " + lifetime + " cycles out of " + lifespan);
+      die();
+    }
     
     // lived another cycle
     hunger++;
@@ -187,6 +189,27 @@ class Creature extends Thing {
     
   }
   */
+  
+  /**
+   * calculate whether the creature dies of old age.
+   * 
+   */
+  boolean oldAge ( float life, float span ) {
+    // set upper and lower bounds for lifetime
+    // bounds were chosen so a creature always has a chance to die and a chance to not die
+    if ( life >= span ) life = span - 1;
+    else if ( life < span / 2 ) life = span / 2;
+    
+    // calculate chance to die
+    // young creatures should have a very small chance to die, and that chance should increase
+    //   dramatically as the creature nears lifespan
+    float p = pow(life / (2 * span), 8.5); // if span is not doubled, the average lifetime if only half of lifespan
+    
+    // don't fear the reaper
+    float r = random(1);
+    if ( r < p ) return true;  // a time to die
+    else return false;  // a time to live
+  }
   
   // Creature dies
   void die () {
