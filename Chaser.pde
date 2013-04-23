@@ -73,16 +73,14 @@ class Chaser extends Creature {
     PVector spawnLoc = getSpawnLocation(location, size);
     
     // randomize child attributes
-    
-    float mutationRate = 1;
     Thing child = new Chaser( spawnLoc, 
                               size, 
-                              randomAtt(maxSpeed, MAXSPEED, mutationRate), 
-                              randomAtt(maxForce, MAXFORCE, mutationRate), 
-                              randomAtt(sightRange, SIGHTRANGE, mutationRate), 
-                              randomAtt(awareness, AWARENESS, mutationRate),
-                              randomAtt(hiding, HIDING, mutationRate),
-                              randomAtt(wanderRate, WANDER, mutationRate),
+                              randomAtt(maxSpeed, mutationRate), 
+                              randomAtt(maxForce, mutationRate), 
+                              randomAtt(sightRange, mutationRate), 
+                              randomAtt(awareness, mutationRate),
+                              randomAtt(hiding, mutationRate),
+                              randomAtt(wanderRate, mutationRate),
                               biosphere);
     biosphere.addCreature(child);
     

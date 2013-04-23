@@ -18,6 +18,8 @@ class Biosphere {
   ArrayList<Thing> ecosystem;  // ArrayList that will contain all objects in the ecosystem
   ArrayList<Thing> spawns;     // ArrayList for holding objects to be added to the ecosystem
   
+  float mutationRate = 0.01;   // Mutation rate for creatures in the ecosystem
+  
   /* Constructors */
   Biosphere () {
     ecosystem = new ArrayList<Thing>();

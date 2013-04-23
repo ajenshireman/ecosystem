@@ -47,6 +47,7 @@ class Creature extends Thing {
   boolean fleeing;    // whether the creature is running form another
   Thing enemy;        // creature this creature is running from
   float decay;        // Timer to remove the Creature from the ecosystem after it dies
+  float mutationRate;
   
   float wanderTheta, change;
   
@@ -86,6 +87,7 @@ class Creature extends Thing {
     this.alive = true;
     this.remove = false;
     this.decay = 0;
+    this.mutationRate = biosphere.mutationRate;
   }
   
   /* set predator and prey lists to the correct ones for the creature's type */
@@ -306,7 +308,6 @@ class Creature extends Thing {
     applyForce(steer);
   }
   
-  @Override
   void accelerate () {
     super.accelerate();
     if ( !fleeing && !hasTarget ) {
@@ -530,8 +531,8 @@ class Creature extends Thing {
   }
   
   /* Randomize the child's attributes */
-  float randomAtt ( float parentAtt, float defaultAtt, float mutationRate ) {
-    if ( random(0, 1) < mutationRate ) {
+  float randomAtt ( float parentAtt, float mutationRate ) {
+    if ( random(1) < mutationRate ) {
       return random(parentAtt * 0.5, parentAtt * 1.5);
     }
     else {
@@ -539,7 +540,4 @@ class Creature extends Thing {
     }
   }
   
-  float randomAtt ( float att, float range ) {
-    return random(att / range, att * range);
-  }
 }
