@@ -123,33 +123,15 @@ class Creature extends Thing {
     search();
     // Sort found things into predators and prey
     sortThings(predators, prey);
-     
-    fleeing = false;
-    // If predators are found, run away from them
-    if ( predatorsFound.size() > 0 ) {
-      PVector escape = flee();
-      steer(escape);
-    }
-    // Not runnig from predators, so try to find food
-    else {
-      if ( preyFound.size() > 0 ) {
-        aquireTarget();
-      }
-      else {
-        hasTarget = false;
-      }
-      
-      // if prey is found, go after it
-      if ( hasTarget ) {
-        PVector attack = chase();
-        steer(attack);
-      }
-      // No food found, wander around a bit
-      else {
-        PVector wander = wander(wanderRate);
-        steer(wander);
-      }
-    }
+    
+    // aquire a target and calulate movement vectors
+    aquireTarget();
+    PVector escape = flee();
+    PVector attack = chase();
+    PVector wander = wander(wanderRate);
+    
+    PVector desired = decide ( escape, attack, wander);
+    steer(desired);
     
     if ( meals >= 5 ) {
       reproduce();
@@ -192,6 +174,22 @@ class Creature extends Thing {
     
   }
   */
+  
+  PVector decide ( PVector escape, PVector attack, PVector wander ) {
+    // If predators are found, run away from them
+    if ( fleeing ) {
+      return escape;
+    }
+    // Not runnig from predators, so try to find food 
+    // if prey is found, go after it
+    else  if ( hasTarget ) {
+      return attack;
+    }
+    // No food found, wander around a bit
+    else {
+      return wander;
+    }
+  }
   
   /**
    * calculate whether the creature dies of old age.
@@ -258,6 +256,7 @@ class Creature extends Thing {
   
   // move towards a static target. slow down on approach
   PVector seek () {
+    if ( target == null ) return velocity;
     //if (hasTarget ) {
       if ( target.remove() ) {
         hasTarget = false;
@@ -278,6 +277,7 @@ class Creature extends Thing {
   
   // chasing a moving target. use traget's velocity to predict where it's going and try to intercept
   PVector pursue () {
+    if ( target == null ) return velocity;
     if ( target.remove() ) {
       hasTarget = false;
       return velocity;
@@ -301,6 +301,8 @@ class Creature extends Thing {
   
   // look at all predators and calculate the best escape vector
   PVector flee () {
+    fleeing = false;
+    if ( predatorsFound.size() <= 0 ) return velocity;
     hasTarget = false;
     fleeing = true;
     PVector escape = new PVector();
@@ -358,7 +360,7 @@ class Creature extends Thing {
     PVector offset = new PVector(R * cos(wanderTheta + heading), R * sin(wanderTheta + heading));
     PVector desired = PVector.add(cLoc, offset);
     //steer(PVector.sub(desired, location));
-    /* debug */
+    /* debug *
     stroke(0);
     noFill();
     ellipseMode(CENTER);
@@ -524,6 +526,11 @@ class Creature extends Thing {
   
   // Aquire closest prey creature
   void aquireNearestTarget () {
+    if ( preyFound.size() <= 0 ) {
+      hasTarget = false;
+      target = null;
+      return;
+    }
     float max = sightRange;
     int index = 0;
     for ( int i = index; i < preyDistance.size(); i++ ) {
