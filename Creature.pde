@@ -127,7 +127,8 @@ class Creature extends Thing {
     fleeing = false;
     // If predators are found, run away from them
     if ( predatorsFound.size() > 0 ) {
-      flee();
+      PVector escape = flee();
+      steer(escape);
     }
     // Not runnig from predators, so try to find food
     else {
@@ -140,11 +141,13 @@ class Creature extends Thing {
       
       // if prey is found, go after it
       if ( hasTarget ) {
-        chase();
+        PVector attack = chase();
+        steer(attack);
       }
       // No food found, wander around a bit
       else {
-        wander(wanderRate);
+        PVector wander = wander(wanderRate);
+        steer(wander);
       }
     }
     
@@ -249,46 +252,47 @@ class Creature extends Thing {
   
   // How to go towards the target.
   // Override for individual behavior.
-  void chase () {
-    
+  PVector chase () {
+    return null;
   }
   
   // move towards a static target. slow down on approach
-  void seek () {
-    if (hasTarget ) {
-      if ( target.isDead() ) {
+  PVector seek () {
+    //if (hasTarget ) {
+      if ( target.remove() ) {
         hasTarget = false;
-        return;
+        return velocity;
       }
       PVector desired = PVector.sub(target.location, location);
       float mag = desired.mag();
       if ( mag < 1 ) {
-        /*
-        target.alive = false; // changing target's status directly: need to invoke a method for this. set lifespan to private for all Creatures?
-        hasTarget = false;
-        */
         eat(target);
-        return;
+        return velocity;
       }
-      steer(desired, mag);
-    }
+      desired.normalize();
+      desired.mult(map(mag, 0, sightRange, 0, maxSpeed));
+      //steer(desired);
+      return desired;
+    //}
   }
   
   // chasing a moving target. use traget's velocity to predict where it's going and try to intercept
-  void pursue () {
+  PVector pursue () {
+    if ( target.remove() ) {
+      hasTarget = false;
+      return velocity;
+    }
     PVector tloc = PVector.add(target.location, target.velocity);
     PVector desired = PVector.sub(tloc, location);
     float mag = desired.mag();
     if ( mag < 1 ) {
-        /*
-        target.alive = false; // changing target's status directly: need to invoke a method for this. set lifespan to private for all Creatures?
-        hasTarget = false;
-        */
-        eat(target);
-        return;
-      }
-    else steer(desired);
-    
+      eat(target);
+      return velocity;
+    }
+    desired.normalize();
+    desired.mult(maxSpeed);
+    //steer(desired);
+    return desired;
     /* debug
     stroke(0);
     line(tloc.x + 10, tloc.y, tloc.x - 10, tloc.y);
@@ -296,7 +300,7 @@ class Creature extends Thing {
   }
   
   // look at all predators and calculate the best escape vector
-  void flee () {
+  PVector flee () {
     hasTarget = false;
     fleeing = true;
     PVector escape = new PVector();
@@ -309,8 +313,10 @@ class Creature extends Thing {
     }
     escape.x /= predatorsFound.size();
     escape.y /= predatorsFound.size();
-    steer(escape);
-    evade(1);
+    //steer(escape);
+    escape.normalize();
+    escape.mult(maxSpeed);
+    return escape;
   }
   
   // apply a force to turn in the desired direction, limit the maximum steering force to mag.
@@ -324,22 +330,22 @@ class Creature extends Thing {
   
   // apply a force to turn in the desired direction, do not limit the force
   void steer ( PVector desired ) {
-    desired.normalize();
-    desired.mult(maxSpeed);
+    //desired.normalize();
+    //desired.mult(maxSpeed);
     PVector steer = PVector.sub(desired, velocity);
     steer.limit(maxForce);
     applyForce(steer);
   }
-  
+  /*
   void accelerate () {
     super.accelerate();
     if ( !fleeing && !hasTarget ) {
       velocity.limit(maxSpeed/2);
     }
   }
-  
+  */
   // "wandering" motion. taken from The Nature of Code
-  void wander ( float change ) {
+  PVector wander ( float change ) {
     float D = sightRange * 1.5;
     float R = sightRange * 0.5;
     //change = 0.1;
@@ -351,8 +357,8 @@ class Creature extends Thing {
     float heading = velocity.heading2D();
     PVector offset = new PVector(R * cos(wanderTheta + heading), R * sin(wanderTheta + heading));
     PVector desired = PVector.add(cLoc, offset);
-    steer(PVector.sub(desired, location));
-    /* debug 
+    //steer(PVector.sub(desired, location));
+    /* debug */
     stroke(0);
     noFill();
     ellipseMode(CENTER);
@@ -363,6 +369,10 @@ class Creature extends Thing {
     //textSize(16);
     //fill(0);
     //text("X: " + location.x + " Y: " + location.y, 100, 50);*/
+    desired = PVector.sub(desired, location);
+    desired.normalize();
+    desired.mult(maxSpeed / 2);
+    return desired;
   }
   
   // "wandering" motion. taken from The Nature of Code

@@ -115,8 +115,8 @@ class Grazer extends Creature {
     }
   }
   
-  void chase () {
-    seek();
+  PVector chase () {
+    return seek();
   }
  
 }

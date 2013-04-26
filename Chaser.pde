@@ -125,8 +125,8 @@ class Chaser extends Creature {
     aquireNearestTarget();
   }
   
-  void chase () {
-    pursue();
+  PVector chase () {
+    return pursue();
   }
   
 }
