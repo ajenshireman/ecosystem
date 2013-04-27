@@ -23,7 +23,7 @@ class Grazer extends Creature {
   /* Lists of predators and prey for this Creature type */            
   String[] prey = { "Grass" };        // this needs to be static but java won't allow it in an inner class.
   String[] predators = { "Chaser" };  // this needs to be static but java won't allow it in an inner class.
-   
+  
   /* Constructors */
   /*
   Grazer ( PVector location, Biosphere biosphere ) {
@@ -61,6 +61,22 @@ class Grazer extends Creature {
     lifespan = LIFESPAN;
   }
   
+  Grazer ( PVector location, 
+           float size,
+           float maxSpeed, 
+           float maxForce, 
+           float sightRange, 
+           float awareness, 
+           float hiding, 
+           float wanderRate, 
+           float[] weights,
+           Biosphere biosphere 
+           ) {
+    super(location, size, maxSpeed, maxForce, sightRange, awareness, hiding, wanderRate, weights, biosphere);
+    setPlaceInFoodChain(predators, prey);
+    lifespan = LIFESPAN;
+  }
+  
   void die () {
     super.die();
     // additional death stuff
@@ -78,6 +94,7 @@ class Grazer extends Creature {
                               randomAtt(awareness, mutationRate),
                               randomAtt(hiding, mutationRate),
                               randomAtt(wanderRate, mutationRate),
+                              brain.getWeights(),
                               biosphere);
     biosphere.addCreature(child);
     

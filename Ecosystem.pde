@@ -18,7 +18,7 @@ Biosphere biosphere;     // Biosphere object which will contain all the things i
 float grassdensity = 5;  // amount of grass in the simulation
 
 void setup () {
-  size(1200, 720, P3D);
+  size(1280, 720, P3D);
   background(bgColor - 10);
   center = new PVector(width / 2, height / 2);
   

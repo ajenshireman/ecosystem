@@ -27,6 +27,8 @@ class Creature extends Thing {
   int meals;        // how many times the Creature has eaten.
   //boolean alive;    // is the creature alive?
   
+  Neuron brain;     // the creature's "brain"
+  
   ArrayList<Thing> ecosystem; // the biosphere the Creature is a part of
   
   String[] predators,  // which types of creatures eat the Creature
@@ -50,6 +52,7 @@ class Creature extends Thing {
   float mutationRate;
   
   float wanderTheta, change;
+  final PVector nullVector = new PVector();
   
   boolean debug = false;
   
@@ -58,7 +61,14 @@ class Creature extends Thing {
   Creature ( PVector location, Biosphere biosphere ) {
     super(location, 1, 1, biosphere);
     this.biosphere = biosphere;
-    alive = true;
+    this.mutationRate = biosphere.mutationRate;
+    this.brain = new Neuron(3);
+    this.lifetime = 0;
+    this.hunger =0;
+    this.meals = 0;
+    this.alive = true;
+    this.remove = false;
+    this.decay = 0;
     setArrays();
   }
   
@@ -81,13 +91,21 @@ class Creature extends Thing {
     this.hiding = hiding;
     this.wanderRate = wanderRate;
     this.wanderTheta = 0;
-    this.lifetime = 0;
-    this.hunger =0;
-    this.meals = 0;
-    this.alive = true;
-    this.remove = false;
-    this.decay = 0;
-    this.mutationRate = biosphere.mutationRate;
+  }
+  
+  Creature ( PVector location,
+             float size, 
+             float maxSpeed, 
+             float maxForce, 
+             float sightRange, 
+             float awareness, 
+             float hiding, 
+             float wanderRate, 
+             float[] weights, 
+             Biosphere biosphere 
+           ) {
+  this(location, size, maxSpeed, maxForce, sightRange, awareness, hiding, wanderRate, biosphere);
+  this.brain = new Neuron(weights);
   }
   
   /* set predator and prey lists to the correct ones for the creature's type */
@@ -129,14 +147,13 @@ class Creature extends Thing {
     PVector escape = flee();
     PVector attack = chase();
     PVector wander = wander(wanderRate);
-    
-    PVector desired = decide ( escape, attack, wander);
+    PVector[] vectors = {escape, attack, wander};
+    PVector desired = brain.feedForward(vectors);
     steer(desired);
     
     if ( meals >= 5 ) {
       reproduce();
     }
-    
     if ( hunger > 1200 ) {
       die();
     }
@@ -175,19 +192,20 @@ class Creature extends Thing {
   }
   */
   
-  PVector decide ( PVector escape, PVector attack, PVector wander ) {
+  // this is a pretty pointless method. the descion for what action to take has just been cut out of update()
+  PVector decide ( PVector[] inputs ) {
     // If predators are found, run away from them
     if ( fleeing ) {
-      return escape;
+      return inputs[0];
     }
     // Not runnig from predators, so try to find food 
     // if prey is found, go after it
     else  if ( hasTarget ) {
-      return attack;
+      return inputs[1];
     }
     // No food found, wander around a bit
     else {
-      return wander;
+      return inputs[2];
     }
   }
   
@@ -251,22 +269,22 @@ class Creature extends Thing {
   // How to go towards the target.
   // Override for individual behavior.
   PVector chase () {
-    return null;
+    return nullVector;
   }
   
   // move towards a static target. slow down on approach
   PVector seek () {
-    if ( target == null ) return velocity;
+    if ( target == null ) return nullVector;
     //if (hasTarget ) {
       if ( target.remove() ) {
         hasTarget = false;
-        return velocity;
+        return nullVector;
       }
       PVector desired = PVector.sub(target.location, location);
       float mag = desired.mag();
       if ( mag < 1 ) {
         eat(target);
-        return velocity;
+        return nullVector;
       }
       desired.normalize();
       desired.mult(map(mag, 0, sightRange, 0, maxSpeed));
@@ -277,17 +295,17 @@ class Creature extends Thing {
   
   // chasing a moving target. use traget's velocity to predict where it's going and try to intercept
   PVector pursue () {
-    if ( target == null ) return velocity;
+    if ( target == null ) return nullVector;
     if ( target.remove() ) {
       hasTarget = false;
-      return velocity;
+      return nullVector;
     }
     PVector tloc = PVector.add(target.location, target.velocity);
     PVector desired = PVector.sub(tloc, location);
     float mag = desired.mag();
     if ( mag < 1 ) {
       eat(target);
-      return velocity;
+      return nullVector;
     }
     desired.normalize();
     desired.mult(maxSpeed);
@@ -302,7 +320,7 @@ class Creature extends Thing {
   // look at all predators and calculate the best escape vector
   PVector flee () {
     fleeing = false;
-    if ( predatorsFound.size() <= 0 ) return velocity;
+    if ( predatorsFound.size() <= 0 ) return nullVector;
     hasTarget = false;
     fleeing = true;
     PVector escape = new PVector();

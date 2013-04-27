@@ -18,7 +18,7 @@ class Chaser extends Creature {
                      AWARENESS = 50,
                      HIDING = 50, 
                      WANDER = 0.3, 
-                     LIFESPAN = 300;
+                     LIFESPAN = 6000;
   
   /* Lists of predators and prey for this Creature type */
   String[] predators = { "" };   // this needs to be static but java won't allow it in an inner class.
@@ -60,7 +60,22 @@ class Chaser extends Creature {
     setPlaceInFoodChain(predators, prey);
     lifespan = LIFESPAN;
   }
-   
+  
+  Chaser ( PVector location, 
+           float size,
+           float maxSpeed, 
+           float maxForce, 
+           float sightRange, 
+           float awareness, 
+           float hiding, 
+           float wanderRate, 
+           float[] weights,
+           Biosphere biosphere 
+           ) {
+    super(location, size, maxSpeed, maxForce, sightRange, awareness, hiding, wanderRate, weights, biosphere);
+    setPlaceInFoodChain(predators, prey);
+    lifespan = LIFESPAN;
+  }
   /* return string containing class name */
   String getType () { return "Chaser"; }
   
@@ -81,6 +96,7 @@ class Chaser extends Creature {
                               randomAtt(awareness, mutationRate),
                               randomAtt(hiding, mutationRate),
                               randomAtt(wanderRate, mutationRate),
+                              brain.getWeights(),
                               biosphere);
     biosphere.addCreature(child);
     
