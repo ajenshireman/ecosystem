@@ -598,4 +598,12 @@ class Creature extends Thing {
     }
   }
   
+  float[] randomAtt ( float[] attributes, float mutationRate ) {
+    for ( int i = 0; i > attributes.length; i++ ) {
+      if ( random(1) < mutationRate ) {
+        attributes[i] = random(1);
+      }
+    }
+    return attributes;
+  }
 }

@@ -94,7 +94,7 @@ class Grazer extends Creature {
                               randomAtt(awareness, mutationRate),
                               randomAtt(hiding, mutationRate),
                               randomAtt(wanderRate, mutationRate),
-                              brain.getWeights(),
+                              randomAtt(brain.getWeights(), mutationRate), 
                               biosphere);
     biosphere.addCreature(child);
     
