@@ -34,12 +34,12 @@ void setup () {
     }
   }
   // add Grazers
-  for ( int i = 0; i < 100; i++ ) {
+  for ( int i = 0; i < 500; i++ ) {
     Thing c = new Grazer(new PVector(random(width), random(height)), biosphere);
     biosphere.addCreature(c);
   }
   // add Chasers
-  for ( int i = 0; i < 10; i++ ) {
+  for ( int i = 0; i < 50; i++ ) {
     Thing c = new Chaser(new PVector(random(width), random(height)), biosphere);
     biosphere.addCreature(c);
   }

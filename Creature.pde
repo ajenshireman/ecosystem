@@ -395,34 +395,6 @@ class Creature extends Thing {
     return desired;
   }
   
-  // "wandering" motion. taken from The Nature of Code
-  void evade ( float evadeChance ) {
-    float D = sightRange * 1.5;
-    float R = sightRange * 0.5;
-    //change = 0.1;
-    float evadeTheta = random( (PI / 4), ( (7 * PI) / 4 ));
-    evadeTheta += PI;
-    PVector cLoc = velocity.get();
-    cLoc.normalize();
-    cLoc.mult(D);
-    cLoc.add(location);
-    float heading = velocity.heading2D();
-    PVector offset = new PVector(R * cos(evadeTheta + heading), R * sin(evadeTheta + heading));
-    PVector desired = PVector.add(cLoc, offset);
-    steer(PVector.sub(desired, location));
-    /* debug *
-    stroke(0);
-    noFill();
-    ellipseMode(CENTER);
-    ellipse(cLoc.x, cLoc.y, R*2, R*2);
-    ellipse(desired.x, desired.y, 4, 4);
-    line(location.x, location.y, cLoc.x, cLoc.y);
-    line(cLoc.x, cLoc.y, desired.x, desired.y);
-    //textSize(16);
-    //fill(0);
-    //text("X: " + location.x + " Y: " + location.y, 100, 50);*/
-  }
-  
   // veer away from the edge rather than bouncing off it.
   // not working properly
   void soft () {
